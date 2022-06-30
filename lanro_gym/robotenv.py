@@ -5,10 +5,10 @@ import gym
 from gym import spaces
 import numpy as np
 
-from lanro.language_utils import Vocabulary, parse_instructions
-from lanro.robots import PyBulletRobot
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.core import LanguageTask, Task
+from lanro_gym.language_utils import Vocabulary, parse_instructions
+from lanro_gym.robots import PyBulletRobot
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.core import LanguageTask, Task
 
 gym.logger.set_level(40)
 

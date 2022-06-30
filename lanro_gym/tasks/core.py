@@ -4,12 +4,12 @@ from typing import Dict, List
 from gym import utils as gym_utils
 import numpy as np
 
-from lanro.robots.pybrobot import PyBulletRobot
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.scene import basic_scene
-import lanro.utils as play_utils
-from lanro.utils import TaskObjectList
-from lanro.language_utils import create_commands
+from lanro_gym.robots.pybrobot import PyBulletRobot
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.scene import basic_scene
+from lanro_gym.utils import TaskObjectList
+from lanro_gym.language_utils import create_commands
+import lanro_gym.utils as play_utils
 
 
 class Task:

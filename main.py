@@ -1,7 +1,7 @@
 import gym
 import os
 import numpy as np
-import lanro
+import lanro_gym
 import argparse
 import glfw
 

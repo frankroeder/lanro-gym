@@ -1,13 +1,11 @@
 import numpy as np
-from lanro.tasks.core import Task
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.scene import basic_scene
-from lanro.utils import RGBCOLORS
-
-SLIDE_OBJ_SIZE: float = 0.06
+from lanro_gym.tasks.core import Task
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.scene import basic_scene
+from lanro_gym.utils import RGBCOLORS
 
 
-class Slide(Task):
+class Push(Task):
 
     def __init__(
         self,
@@ -15,15 +13,13 @@ class Slide(Task):
         reward_type: str = "sparse",
         distance_threshold: float = 0.05,
         goal_xy_range: float = 0.3,
-        goal_x_offset: float = 0.4,
         obj_xy_range: float = 0.3,
     ):
         self.sim = sim
         self.reward_type = reward_type
         self.distance_threshold = distance_threshold
-        self.object_size = SLIDE_OBJ_SIZE
-        self.goal_range_low = np.array([-goal_xy_range / 2 + goal_x_offset, -goal_xy_range / 2, 0])
-        self.goal_range_high = np.array([goal_xy_range / 2 + goal_x_offset, goal_xy_range / 2, 0])
+        self.goal_range_low = np.array([-goal_xy_range / 2, -goal_xy_range / 2, 0])
+        self.goal_range_high = np.array([goal_xy_range / 2, goal_xy_range / 2, 0])
         self.obj_range_low = np.array([-obj_xy_range / 2, -obj_xy_range / 2, 0])
         self.obj_range_high = np.array([obj_xy_range / 2, obj_xy_range / 2, 0])
         with self.sim.no_rendering():
@@ -31,23 +27,28 @@ class Slide(Task):
             self.sim.place_visualizer()
 
     def _create_scene(self) -> None:
-        basic_scene(self.sim, table_length=1.2, table_x_offset=0.1, plane_x_pos=0., plane_length=1)
-        self.sim.create_cylinder(
+        basic_scene(self.sim)
+
+        self.sim.create_box(
             body_name="object",
+            half_extents=[
+                self.object_size / 2,
+                self.object_size / 2,
+                self.object_size / 2,
+            ],
             mass=2.0,
-            radius=self.object_size / 2,
-            height=self.object_size / 2,
             position=[0.0, 0.0, self.object_size / 2],
             rgba_color=RGBCOLORS.RED.value + [1],
-            lateral_friction=0.1,
-            spinning_friction=0.005,
         )
-        self.sim.create_cylinder(
+        self.sim.create_box(
             body_name="target",
+            half_extents=[
+                self.object_size / 2,
+                self.object_size / 2,
+                self.object_size / 2,
+            ],
             mass=0.0,
             ghost=True,
-            radius=self.object_size / 2,
-            height=self.object_size / 2,
             position=[0.0, 0.0, self.object_size / 2],
             rgba_color=RGBCOLORS.RED.value + [0.3],
         )
@@ -82,7 +83,7 @@ class Slide(Task):
 
     def _sample_goal(self) -> np.ndarray:
         """Randomize goal."""
-        goal = [0.0, 0.0, self.object_size / 2]
+        goal = [0.0, 0.0, self.object_size / 2] # z offset for the cube center
         noise = self.np_random.uniform(self.goal_range_low, self.goal_range_high)
         goal += noise
         return goal.copy()

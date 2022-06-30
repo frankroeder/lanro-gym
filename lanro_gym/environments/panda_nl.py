@@ -1,7 +1,7 @@
-from lanro.robotenv import RobotLanguageEnv
-from lanro.simulation import PyBulletSimulation
-from lanro.robots import Panda
-from lanro.tasks import NLReach, NLLift, NLGrasp, NLPush
+from lanro_gym.robotenv import RobotLanguageEnv
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.robots import Panda
+from lanro_gym.tasks import NLReach, NLLift, NLGrasp, NLPush
 
 
 class PandaNLReachEnv(RobotLanguageEnv):

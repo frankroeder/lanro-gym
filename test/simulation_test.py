@@ -1,5 +1,5 @@
 import numpy as np
-from lanro.simulation import PyBulletSimulation
+from lanro_gym.simulation import PyBulletSimulation
 
 
 def test_init_step_close():

@@ -3,8 +3,8 @@ import os
 from gym import spaces
 from typing import Callable, Dict, List, Optional
 import numpy as np
-from lanro.simulation import PyBulletSimulation
-from lanro.utils import RGBCOLORS
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.utils import RGBCOLORS
 
 DEBUG = int("DEBUG" in os.environ and os.environ["DEBUG"])
 JointInfo = namedtuple('JointInfo', [

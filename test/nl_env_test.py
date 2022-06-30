@@ -1,7 +1,7 @@
 import numpy as np
 import gym
-import lanro
-from lanro.language_utils import parse_instructions
+import lanro_gym
+from lanro_gym.language_utils import parse_instructions
 
 
 def check_instruction(env, obs):

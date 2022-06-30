@@ -1,8 +1,8 @@
-from lanro.robots import PyBulletRobot
 import numpy as np
-from lanro.tasks.core import LanguageTask
-from lanro.simulation import PyBulletSimulation
-from lanro.utils import goal_distance
+from lanro_gym.robots import PyBulletRobot
+from lanro_gym.tasks.core import LanguageTask
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.utils import goal_distance
 
 
 class NLReach(LanguageTask):

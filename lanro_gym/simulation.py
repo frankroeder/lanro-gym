@@ -5,7 +5,7 @@ import pybullet_data as pd
 from pybullet_utils import bullet_client
 from contextlib import contextmanager
 import time
-import lanro.utils as play_utils
+import lanro_gym.utils as play_utils
 import numpy as np
 import warnings
 

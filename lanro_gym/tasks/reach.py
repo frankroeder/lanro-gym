@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Callable
-from lanro.tasks.core import Task
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.scene import basic_scene
-from lanro.utils import RGBCOLORS
+from lanro_gym.tasks.core import Task
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.scene import basic_scene
+from lanro_gym.utils import RGBCOLORS
 
 
 class Reach(Task):

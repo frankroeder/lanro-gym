@@ -1,6 +1,6 @@
 import numpy as np
-from lanro.language_utils import parse_instructions, create_commands, Vocabulary
-from lanro.utils import SHAPES, RGBCOLORS
+from lanro_gym.language_utils import parse_instructions, create_commands, Vocabulary
+from lanro_gym.utils import SHAPES, RGBCOLORS
 
 
 def test_parse_instruction():

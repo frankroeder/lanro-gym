@@ -8,25 +8,25 @@ for reward_type in ["sparse", "dense"]:
     }
     register(
         id=f'{robot}Reach{_r_type}-v0',
-        entry_point='lanro.environments:{}ReachEnv'.format(robot),
+        entry_point='lanro_gym.environments:{}ReachEnv'.format(robot),
         max_episode_steps=50,
         kwargs=kwargs,
     )
     register(
         id=f'{robot}Push{_r_type}-v0',
-        entry_point='lanro.environments:{}PushEnv'.format(robot),
+        entry_point='lanro_gym.environments:{}PushEnv'.format(robot),
         max_episode_steps=50,
         kwargs=kwargs,
     )
     register(
         id=f'{robot}Slide{_r_type}-v0',
-        entry_point='lanro.environments:{}SlideEnv'.format(robot),
+        entry_point='lanro_gym.environments:{}SlideEnv'.format(robot),
         max_episode_steps=50,
         kwargs=kwargs,
     )
     register(
         id=f'{robot}PickAndPlace{_r_type}-v0',
-        entry_point='lanro.environments:{}StackEnv'.format(robot),
+        entry_point='lanro_gym.environments:{}StackEnv'.format(robot),
         max_episode_steps=50,
         kwargs={
             **kwargs,
@@ -37,7 +37,7 @@ for reward_type in ["sparse", "dense"]:
     for num_obj in [2, 3, 4]:
         register(
             id=f'{robot}Stack{num_obj}{_r_type}-v0',
-            entry_point='lanro.environments:{}StackEnv'.format(robot),
+            entry_point='lanro_gym.environments:{}StackEnv'.format(robot),
             max_episode_steps=50 * num_obj,
             kwargs={
                 **kwargs, 'num_obj': num_obj
@@ -72,18 +72,18 @@ for num_obj in [2, 3]:
                 param_combination = f"{num_obj}{_current_mode}{_current_obstype}{_current_h_instr}"
 
                 register(id=f'{robot}NLReach{param_combination}-v0',
-                         entry_point='lanro.environments:{}NLReachEnv'.format(robot),
+                         entry_point='lanro_gym.environments:{}NLReachEnv'.format(robot),
                          max_episode_steps=_max_episode_steps,
                          kwargs=_kwargs)
                 register(id=f'{robot}NLPush{param_combination}-v0',
-                         entry_point='lanro.environments:{}NLPushEnv'.format(robot),
+                         entry_point='lanro_gym.environments:{}NLPushEnv'.format(robot),
                          max_episode_steps=_max_episode_steps,
                          kwargs=_kwargs)
                 register(id=f'{robot}NLGrasp{param_combination}-v0',
-                         entry_point='lanro.environments:{}NLGraspEnv'.format(robot),
+                         entry_point='lanro_gym.environments:{}NLGraspEnv'.format(robot),
                          max_episode_steps=_max_episode_steps,
                          kwargs=_kwargs)
                 register(id=f'{robot}NLLift{param_combination}-v0',
-                         entry_point='lanro.environments:{}NLLiftEnv'.format(robot),
+                         entry_point='lanro_gym.environments:{}NLLiftEnv'.format(robot),
                          max_episode_steps=_max_episode_steps,
                          kwargs=_kwargs)

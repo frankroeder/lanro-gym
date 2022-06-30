@@ -1,7 +1,7 @@
-from lanro.robotenv import RobotEnv
-from lanro.simulation import PyBulletSimulation
-from lanro.robots import Panda
-from lanro.tasks import Reach, Push, Stack, Slide
+from lanro_gym.robotenv import RobotEnv
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.robots import Panda
+from lanro_gym.tasks import Reach, Push, Stack, Slide
 
 
 class PandaReachEnv(RobotEnv):

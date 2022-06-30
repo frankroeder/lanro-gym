@@ -1,6 +1,6 @@
-from lanro.robots import PyBulletRobot
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.nllift import NLLift
+from lanro_gym.robots import PyBulletRobot
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.nllift import NLLift
 
 
 class NLGrasp(NLLift):

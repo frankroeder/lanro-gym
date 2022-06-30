@@ -1,8 +1,8 @@
 from typing import List
-from lanro.simulation import PyBulletSimulation
 import numpy as np
-from lanro.robots.pybrobot import PyBulletRobot
-import lanro.utils as play_utils
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.robots.pybrobot import PyBulletRobot
+import lanro_gym.utils as play_utils
 
 
 class Panda(PyBulletRobot):

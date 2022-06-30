@@ -1,9 +1,9 @@
 import numpy as np
-from lanro.robots import PyBulletRobot
-from lanro.simulation import PyBulletSimulation
-from lanro.tasks.core import LanguageTask
-from lanro.tasks.scene import basic_scene
-from lanro.utils import goal_distance
+from lanro_gym.robots import PyBulletRobot
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.tasks.core import LanguageTask
+from lanro_gym.tasks.scene import basic_scene
+from lanro_gym.utils import goal_distance
 
 
 class NLPush(LanguageTask):

@@ -1,4 +1,4 @@
-from lanro.simulation import PyBulletSimulation
+from lanro_gym.simulation import PyBulletSimulation
 
 PLANE_COLOR = [0.37, 0.37, 0.37, 1]
 TABLE_COLOR = [0.95, 0.95, 0.95, 1]

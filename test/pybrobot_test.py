@@ -1,5 +1,5 @@
-from lanro.simulation import PyBulletSimulation
-from lanro.robots import Panda
+from lanro_gym.simulation import PyBulletSimulation
+from lanro_gym.robots import Panda
 
 
 def test_panda_robot_state_obs():

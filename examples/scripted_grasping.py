@@ -1,6 +1,6 @@
 """A script to demonstrate grasping."""
 import gym
-import lanro
+import lanro_gym
 import numpy as np
 
 env = gym.make("PandaNLLift3Shape-v0", render=True)

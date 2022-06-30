@@ -1,6 +1,6 @@
 import numpy as np
-from lanro.utils import TaskObject, TaskObjectList, RGBCOLORS, SHAPES, get_one_hot_list
-from lanro.simulation import PyBulletSimulation
+from lanro_gym.utils import TaskObject, TaskObjectList, RGBCOLORS, SHAPES, get_one_hot_list
+from lanro_gym.simulation import PyBulletSimulation
 
 
 def test_task_object():

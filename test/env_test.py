@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-import lanro
+import lanro_gym
 
 
 def test_env_open_close():

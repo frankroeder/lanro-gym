@@ -1,7 +1,11 @@
+import os
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as f:
     long_description = f.read()
+
+with open(os.path.join("lanro_gym", "VERSION"), "r") as f:
+    __version__ = f.read().strip()
 
 setup(
     name="lanro_gym",
@@ -12,10 +16,10 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/frankroeder/lanro-gym",
-    packages=find_packages(),
-    package_data={},
+    packages=[package for package in find_packages() if package.startswith("lanro_gym")],
+    package_data={ "lanro_gym": ["VERSION"] },
     include_package_data=True,
-    version=open("LANRO_VERSION").read().strip(),
+    version=__version__,
     install_requires=["gym", "pybullet", "numpy"],
     extras_require={"dev": ["pytest", "yapf", "ipdb", "glfw"]},
     python_requires=">=3.6",

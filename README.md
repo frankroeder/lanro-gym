@@ -32,7 +32,7 @@ pip install git+ssh://git@github.com/frankroeder/lanro-gym.git
 
 ```python
 import gym
-import lanro
+import lanro_gym
 
 env = gym.make('PandaStack2-v0', render=True)
 
@@ -46,7 +46,7 @@ env.close()
 
 ## Environments
 
-[Click here for the environments README](./lanro/environments/README.md)
+[Click here for the environments README](./lanro_gym/environments/README.md)
 
 ## Keyboard and mouse control
 It is also possible to manipulate the robot with sliders
