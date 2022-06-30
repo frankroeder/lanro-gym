@@ -3,6 +3,10 @@
 <img src="./docs/panda_nlpush.gif" width="100%" height="auto">
 </div>
 
+__LANRO__ is a platform to study language-conditioned reinforcement learning with
+a synthetic caretaker providing instructions in hindsight.
+It had been published as part of our paper [**_Grounding Hindsight Instructions in Multi-Goal Reinforcement Learning for Robotics_**](https://arxiv.org/abs/2204.04308).
+
 ## Installation
 ### Pip module
 
