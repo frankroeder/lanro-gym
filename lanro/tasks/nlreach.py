@@ -1,5 +1,4 @@
 from lanro.robots import PyBulletRobot
-import gym
 import numpy as np
 from lanro.tasks.core import LanguageTask
 from lanro.simulation import PyBulletSimulation

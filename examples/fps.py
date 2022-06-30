@@ -1,3 +1,4 @@
+"""A script to measure the FPS"""
 import gym
 import lanro
 import time as time

@@ -29,3 +29,15 @@ def test_nl_envs():
                             obs = env.reset()
                             check_instruction(env, obs)
                             env.close()
+
+
+def test_pixel_envs():
+    for lang_task in ['NLReach', 'NLPush', 'NLGrasp', 'NLLift']:
+        for _pixel_obstype in ["PixelEgo", "PixelStatic"]:
+            env = gym.make(f"Panda{lang_task}2{_pixel_obstype}-v0")
+            obs = env.reset()
+            img = obs['observation']
+            assert img.shape == (84, 84, 3)
+            assert env.observation_space['observation'].shape == (84, 84, 3)
+            assert env.observation_space['observation'].dtype == np.uint8
+            env.close()

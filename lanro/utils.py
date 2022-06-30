@@ -15,7 +15,7 @@ class RGBCOLORS(Enum):
     CYAN = scale_rgb([118.0, 183.0, 178.0])
     GRAY = scale_rgb([186.0, 176.0, 172.0])
     GREEN = scale_rgb([89.0, 169.0, 79.0])
-    MAGENTA = scale_rgb([255.0, 157.0, 167.0])
+    PINK = scale_rgb([255.0, 157.0, 167.0])
     ORANGE = scale_rgb([242.0, 142.0, 43.0])
     PURPLE = scale_rgb([176.0, 122.0, 161.0])
     RED = scale_rgb([255.0, 87.0, 89.0])
@@ -183,7 +183,7 @@ class TaskObjectList:
                 RGBCOLORS.YELLOW,
                 RGBCOLORS.PURPLE,
                 RGBCOLORS.ORANGE,
-                RGBCOLORS.MAGENTA,
+                RGBCOLORS.PINK,
                 RGBCOLORS.CYAN,
                 RGBCOLORS.BROWN,
             ])

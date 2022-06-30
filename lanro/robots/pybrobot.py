@@ -309,7 +309,7 @@ class PyBulletRobot:
         rightg = tuple(rightg)
         hit_obj_id, link_idx, hit_fraction, hit_pos, hit_normal = self.sim.bclient.rayTest(leftg, rightg)[0]
         if DEBUG:
-            line_color = RGBCOLORS.MAGENTA.value
+            line_color = RGBCOLORS.PINK.value
             self.sim.bclient.addUserDebugLine(leftg, rightg, line_color, 0.5, 1, replaceItemUniqueId=0)
         return hit_obj_id, link_idx, hit_fraction, hit_pos, hit_normal
 
