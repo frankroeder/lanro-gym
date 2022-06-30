@@ -1,0 +1,23 @@
+[tool.pyright]
+verboseOutput = true
+
+reportMissingImports = false
+reportUnusedImport = false
+reportDuplicateImport = false
+reportOptionalMemberAccess = "none"
+reportUnknownMemberType = false
+reportUnusedVariable = "none"
+reportUnboundVariable = false
+reportMissingTypeStubs = false
+
+pythonVersion = "3.9"
+pythonPlatform = "Darwin"
+
+executionEnvironments = []
+
+[tool.yapf]
+based_on_style = "pep8"
+column_limit = 120
+spaces_before_comment = 1
+split_before_logical_operator = true
+dedent_closing_brackets = false
