@@ -4,13 +4,18 @@ import pybullet as p
 import pybullet_data as pd
 from pybullet_utils import bullet_client
 from contextlib import contextmanager
+from lanro_gym.env_utils import RGBCOLORS
 import time
-import lanro_gym.utils as play_utils
+from lanro_gym.utils import environment_camera
 import numpy as np
 import warnings
+import pkgutil
+import subprocess
+import xml.etree.ElementTree as ET
 
 DEBUG = int("DEBUG" in os.environ and os.environ["DEBUG"])
 DEBUG_CAM = int("DEBUG_CAM" in os.environ and os.environ["DEBUG_CAM"])
+PYB_GPU = int("PYB_GPU" in os.environ and os.environ["PYB_GPU"])
 GRAVITY: float = -9.81
 HZ: float = 500
 
@@ -45,6 +50,22 @@ class PyBulletSimulation:
         self.bclient.resetSimulation()
         self.bclient.setGravity(0, 0, GRAVITY)
         self.bclient.setAdditionalSearchPath(pd.getDataPath())
+
+        # GPU support for faster rendering of camera images
+        if PYB_GPU:
+            os.environ['MESA_GL_VERSION_OVERRIDE'] = '3.3'
+            os.environ['MESA_GLSL_VERSION_OVERRIDE'] = '330'
+            # Get EGL device
+            assert 'CUDA_VISIBLE_DEVICES' in os.environ
+            devices = os.environ.get('CUDA_VISIBLE_DEVICES', ).split(',')
+            assert len(devices) == 1, "No devices specified by CUDA_VISIBLE_DEVICES"
+            out = subprocess.check_output(['nvidia-smi', '--id=' + str(devices[0]), '-q', '--xml-format'])
+            tree = ET.fromstring(out)
+            gpu = tree.findall('gpu')[0]
+            dev_id = gpu.find('minor_number').text
+            os.environ['EGL_VISIBLE_DEVICES'] = str(dev_id)
+            egl = pkgutil.get_loader('eglRenderer')
+            p.loadPlugin(egl.get_filename(), "_eglRendererPlugin")
 
         self._bodies_idx: Dict[str, Any] = {}
 
@@ -85,7 +106,7 @@ class PyBulletSimulation:
                                                                         roll=0,
                                                                         upAxisIndex=2)
             projectionMatrix = self.bclient.computeProjectionMatrixFOV(fov=60, aspect=1, nearVal=0.1, farVal=100)
-            return play_utils.environment_camera(self.bclient, projectionMatrix, viewMatrix)
+            return environment_camera(self.bclient, projectionMatrix, viewMatrix)
 
     def _setup_camera_controls(self):
         self._cam_controls = [
@@ -499,14 +520,14 @@ class PyBulletSimulation:
             self.bclient.removeBody(self._bodies_idx[body_name])
             del self._bodies_idx[body_name]
 
-    def set_orientation_lines(self, robot_uid, parent_link_index):
+    def set_orientation_lines(self, robot_uid, parent_link_index, offset=0.065):
         """ Visualize orientation lines for the robots end effector."""
-        line_color = play_utils.RGBCOLORS.BLUE.value
-        self.bclient.addUserDebugLine([-1, 0, 0.05], [1, 0, 0.05],
+        line_color = RGBCOLORS.BLUE.value[0]
+        self.bclient.addUserDebugLine([-1, 0, offset], [1, 0, offset],
                                       line_color,
                                       parentObjectUniqueId=robot_uid,
                                       parentLinkIndex=parent_link_index)
-        self.bclient.addUserDebugLine([0, -1, 0.05], [0, 1, 0.05],
+        self.bclient.addUserDebugLine([0, -1, offset], [0, 1, offset],
                                       line_color,
                                       parentObjectUniqueId=robot_uid,
                                       parentLinkIndex=parent_link_index)

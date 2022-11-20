@@ -13,6 +13,10 @@ class NLGrasp(NLLift):
                  min_goal_height: float = 0.0,
                  max_goal_height: float = 0.01,
                  use_hindsight_instructions: bool = False,
+                 use_action_repair: bool = False,
+                 delay_action_repair: bool = False,
+                 use_negations_action_repair: bool = False,
+                 use_synonyms: bool = False,
                  mode: str = 'Color'):
         super().__init__(sim,
                          robot,
@@ -21,6 +25,10 @@ class NLGrasp(NLLift):
                          min_goal_height=min_goal_height,
                          max_goal_height=max_goal_height,
                          use_hindsight_instructions=use_hindsight_instructions,
+                         use_action_repair=use_action_repair,
+                         delay_action_repair=delay_action_repair,
+                         use_negations_action_repair=use_negations_action_repair,
+                         use_synonyms=use_synonyms,
                          mode=mode)
 
         self.action_verbs = ["grasp", "grip", "grab"]

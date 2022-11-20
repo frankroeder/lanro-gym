@@ -16,9 +16,6 @@ reportUnusedVariable = "none"
 reportUnboundVariable = false
 reportMissingTypeStubs = false
 
-pythonVersion = "3.9"
-pythonPlatform = "Darwin"
-
 executionEnvironments = []
 
 [tool.yapf]
@@ -27,3 +24,11 @@ column_limit = 120
 spaces_before_comment = 1
 split_before_logical_operator = true
 dedent_closing_brackets = false
+
+[tool.pytest.ini_options]
+minversion = "6.2"
+addopts = "-ra --verbose"
+testpaths = [
+  "test",
+  "test/env_utils"
+]

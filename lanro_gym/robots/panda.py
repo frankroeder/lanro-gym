@@ -1,8 +1,8 @@
 from typing import List
-import numpy as np
 from lanro_gym.simulation import PyBulletSimulation
+import numpy as np
 from lanro_gym.robots.pybrobot import PyBulletRobot
-import lanro_gym.utils as play_utils
+from lanro_gym.utils import gripper_camera
 
 
 class Panda(PyBulletRobot):
@@ -10,8 +10,8 @@ class Panda(PyBulletRobot):
     NEUTRAL_FINGER_VALUES: List = [0, 0]
     ee_link: int = 11
     num_DOF: int = 7
-    gripper_obs_left_z_offset = 0.031
-    gripper_obs_right_z_offset = 0.031
+    gripper_obs_left_z_offset = 0.026
+    gripper_obs_right_z_offset = 0.026
     left_finger_id = 9
     right_finger_id = 10
 
@@ -63,7 +63,4 @@ class Panda(PyBulletRobot):
     def get_camera_img(self):
         ee_position = np.array(self.get_ee_position())
         projectionMatrix = self.sim.bclient.computeProjectionMatrixFOV(fov=60, aspect=1, nearVal=0.1, farVal=100.0)
-        return play_utils.gripper_camera(self.sim.bclient,
-                                         projectionMatrix,
-                                         ee_position, [0, 0, 0, 0],
-                                         mode=self.camera_mode)
+        return gripper_camera(self.sim.bclient, projectionMatrix, ee_position, [0, 0, 0, 0], mode=self.camera_mode)

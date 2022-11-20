@@ -3,7 +3,7 @@ from typing import Callable
 from lanro_gym.tasks.core import Task
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.scene import basic_scene
-from lanro_gym.utils import RGBCOLORS
+from lanro_gym.env_utils import RGBCOLORS
 
 
 class Reach(Task):
@@ -32,11 +32,8 @@ class Reach(Task):
             mass=0.0,
             ghost=True,
             position=[0.0, 0.0, 0.0],
-            rgba_color=RGBCOLORS.RED.value + [0.3],
+            rgba_color=RGBCOLORS.RED.value[0] + [0.3],
         )
-
-    def get_goal(self) -> np.ndarray:
-        return self.goal.copy()
 
     def get_obs(self) -> np.ndarray:
         return np.array([])

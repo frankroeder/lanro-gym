@@ -2,7 +2,7 @@ import numpy as np
 from lanro_gym.robots import PyBulletRobot
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.core import LanguageTask
-from lanro_gym.tasks.scene import basic_scene
+from lanro_gym.language_utils import create_commands
 
 
 class NLLift(LanguageTask):
@@ -15,8 +15,13 @@ class NLLift(LanguageTask):
                  min_goal_height: float = 0.0,
                  max_goal_height: float = 0.1,
                  use_hindsight_instructions: bool = False,
+                 use_action_repair: bool = False,
+                 delay_action_repair: bool = False,
+                 use_negations_action_repair: bool = False,
+                 use_synonyms: bool = False,
                  mode: str = 'Color'):
-        super().__init__(sim, robot, mode, use_hindsight_instructions, num_obj)
+        super().__init__(sim, robot, mode, use_hindsight_instructions, use_action_repair, delay_action_repair,
+                         use_negations_action_repair, num_obj, use_synonyms)
         self.max_goal_height = max_goal_height
         self.min_goal_height = min_goal_height
         self.obj_range_low = np.array([-obj_xy_range / 2, -obj_xy_range / 2, 0])
@@ -25,9 +30,6 @@ class NLLift(LanguageTask):
         with self.sim.no_rendering():
             self._create_scene()
             self.sim.place_visualizer()
-
-    def _create_scene(self) -> None:
-        basic_scene(self.sim)
 
     def reset(self) -> None:
         self.sample_task_objects()
@@ -38,7 +40,7 @@ class NLLift(LanguageTask):
         # similar to the pick and place task, the goal height is 0 at least 30% of the time
         if self.np_random.random() < 0.3:
             self.ep_height_threshold = 0
-        self.reset_hi()
+        self.reset_hi_and_ar()
 
     def grasped_and_lifted(self, obj_body_key):
         obj_pos = np.array(self.sim.get_base_position(obj_body_key))
@@ -54,11 +56,31 @@ class NLLift(LanguageTask):
 
     def compute_reward(self) -> float:
         if self.is_success():
-            return 0.0
+            return self.generate_action_repair_or_success()
         elif self.ep_hindsight_instruction and not self.ep_hindsight_instruction_returned:
             for other_object_idx in self.non_goal_body_indices:
                 # if grasped with both fingers and being at a certain height
                 if self.grasped_and_lifted(f"object{other_object_idx}"):
                     self.generate_hindsight_instruction(other_object_idx)
                     return -10.
+        elif self.ep_action_repair and not self.ep_action_repair_returned:
+            for other_object_idx in self.non_goal_body_indices:
+                # if grasped with both fingers and being at a certain height
+                if self.grasped_and_lifted(f"object{other_object_idx}"):
+                    if self.use_negations_action_repair and self.np_random.random() < 0.5:
+                        # action correction with negation
+                        # "lift the red object" -> lifts green object -> correction "no not the green object"
+                        target_property_tuple = self.task_object_list.objects[other_object_idx].get_properties()
+                        repair_commands = create_commands("negation",
+                                                          target_property_tuple,
+                                                          use_synonyms=self.use_synonyms)
+                    else:
+                        # additional feedback for the goal object, lifting a wrong object
+                        # "lift the red block" -> *lifts green block* -> "the red block!"
+                        target_property_tuple = self.task_object_list.objects[self.goal_obj_idx].get_properties()
+                        repair_commands = create_commands("repair",
+                                                          target_property_tuple,
+                                                          use_synonyms=self.use_synonyms)
+                    self.merge_instruction_action_repair(repair_commands)
+                    return -1.0
         return -1.0

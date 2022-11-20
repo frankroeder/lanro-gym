@@ -1,27 +1,20 @@
-import gym
+import gymnasium as gym
 import numpy as np
 import lanro_gym
 
 
-def test_env_open_close():
-    env = gym.make("PandaReach-v0")
-    env.reset()
-    env.close()
-
-
 def run_random_policy(env):
-    done = False
     env.reset()
-    while not done:
-        obs, _, done, _ = env.step(env.action_space.sample())
+    for _ in range(env._max_episode_steps):
+        obs = env.step(env.action_space.sample())[0]
         assert np.all(obs['observation'] <= env.observation_space['observation'].high) == True
         assert np.all(obs['observation'] >= env.observation_space['observation'].low) == True
     env.close()
 
 
 def check_calc_reward(env):
-    """Test for `compute_reward()` for HER compatibility.""" ""
-    obs = env.reset()
+    """Test `compute_reward()` for HER compatibility.""" ""
+    obs, _ = env.reset()
     ag = obs['achieved_goal']
     g = obs['desired_goal']
     single_reward = env.compute_reward(ag, g, None)
@@ -33,9 +26,14 @@ def check_calc_reward(env):
     assert batch_reward.shape[0] == batch_size
 
 
-def test_envs():
+def test_env_open_close():
+    env = gym.make("PandaReach-v0")
+    env.reset()
+    env.close()
+
+
+def test_goal_conditioned_envs():
     render_mode = False
-    obj_count = 2
     action_types = [
         'absolute_quat', 'relative_quat', 'relative_joints', 'absolute_joints', 'absolute_rpy', 'relative_rpy',
         'end_effector'
@@ -48,9 +46,22 @@ def test_envs():
             for task in ['Stack2', 'Stack3', 'Stack4']:
                 run_random_policy(gym.make(f'{robot}{task}-v0', render=render_mode, action_type=a_type))
                 check_calc_reward(gym.make(f'{robot}{task}-v0'))
+
+
+def test_language_conditioned_envs():
+    render_mode = False
+    obj_count = 2
+    action_types = [
+        'absolute_quat', 'relative_quat', 'relative_joints', 'absolute_joints', 'absolute_rpy', 'relative_rpy',
+        'end_effector'
+    ]
+    for a_type in action_types:
+        for robot in ['Panda']:
             for lang_task in ['NLReach', 'NLPush', 'NLGrasp', 'NLLift']:
-                for _mode in ['', 'Color', 'Shape', 'ColorShape']:
+                for _mode in ['', 'Color', 'Shape', 'Weight', 'Size', 'ColorShape', 'WeightShape', 'SizeShape']:
                     for _obstype in ["", "PixelEgo", "PixelStatic"]:
-                        for _hindsight_instr in ["", "HI"]:
-                            id = f'{robot}{lang_task}{obj_count}{_mode}{_obstype}{_hindsight_instr}-v0'
-                            run_random_policy(gym.make(id, render=render_mode, action_type=a_type))
+                        for _use_syn in ["", "Synonyms"]:
+                            for _hindsight_instr in ["", "HI"]:
+                                for _action_repair in ["", "AR", "ARN", "ARD", "ARND"]:
+                                    id = f'{robot}{lang_task}{obj_count}{_mode}{_obstype}{_use_syn}{_hindsight_instr}{_action_repair}-v0'
+                                    run_random_policy(gym.make(id, render=render_mode, action_type=a_type))

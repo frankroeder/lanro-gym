@@ -1,10 +1,10 @@
-from lanro_gym.robotenv import RobotEnv
+from lanro_gym.env import GoalEnv
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.robots import Panda
 from lanro_gym.tasks import Reach, Push, Stack, Slide
 
 
-class PandaReachEnv(RobotEnv):
+class PandaReachEnv(GoalEnv):
 
     def __init__(self, render=False, reward_type="sparse", action_type='end_effector'):
         sim = PyBulletSimulation(render=render)
@@ -14,31 +14,31 @@ class PandaReachEnv(RobotEnv):
             reward_type=reward_type,
             get_ee_position=robot.get_ee_position,
         )
-        RobotEnv.__init__(self, sim, robot, task)
+        GoalEnv.__init__(self, sim, robot, task)
 
 
-class PandaPushEnv(RobotEnv):
+class PandaPushEnv(GoalEnv):
 
     def __init__(self, render=False, reward_type="sparse", action_type='end_effector'):
         sim = PyBulletSimulation(render=render)
         robot = Panda(sim, fixed_gripper=True, action_type=action_type)
         task = Push(sim, reward_type=reward_type)
-        RobotEnv.__init__(self, sim, robot, task)
+        GoalEnv.__init__(self, sim, robot, task)
 
 
-class PandaSlideEnv(RobotEnv):
+class PandaSlideEnv(GoalEnv):
 
     def __init__(self, render=False, reward_type="sparse", action_type='end_effector'):
         sim = PyBulletSimulation(render=render)
         robot = Panda(sim, fixed_gripper=True, action_type=action_type)
         task = Slide(sim, reward_type=reward_type)
-        RobotEnv.__init__(self, sim, robot, task)
+        GoalEnv.__init__(self, sim, robot, task)
 
 
-class PandaStackEnv(RobotEnv):
+class PandaStackEnv(GoalEnv):
 
     def __init__(self, render=False, reward_type="sparse", num_obj=2, goal_z_range=0.0, action_type='end_effector'):
         sim = PyBulletSimulation(render=render)
         robot = Panda(sim, fixed_gripper=False, action_type=action_type)
         task = Stack(sim, reward_type=reward_type, num_obj=num_obj, goal_z_range=goal_z_range)
-        RobotEnv.__init__(self, sim, robot, task)
+        GoalEnv.__init__(self, sim, robot, task)

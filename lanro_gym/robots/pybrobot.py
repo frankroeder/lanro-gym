@@ -1,10 +1,10 @@
 from collections import namedtuple
 import os
-from gym import spaces
+from gymnasium import spaces
 from typing import Callable, Dict, List, Optional
 import numpy as np
 from lanro_gym.simulation import PyBulletSimulation
-from lanro_gym.utils import RGBCOLORS
+from lanro_gym.env_utils import RGBCOLORS
 
 DEBUG = int("DEBUG" in os.environ and os.environ["DEBUG"])
 JointInfo = namedtuple('JointInfo', [
@@ -35,7 +35,8 @@ class PyBulletRobot:
         :param fingers_friction: The amount of finger friction of the gripper
         :param full state: If the full state should be returned
         :param action_type: How actions are calculated
-            One of ['absolute_quat', 'relative_quat', 'relative_joints', 'absolute_joints', 'absolute_rpy', 'relative_rpy']
+            One of ['absolute_quat', 'relative_quat', 'relative_joints',
+                    'absolute_joints', 'absolute_rpy', 'relative_rpy', 'end_effector']
         """
         self.sim = sim
         self.body_name = body_name
@@ -45,7 +46,7 @@ class PyBulletRobot:
         self.max_joint_change = sim.dt
         # gripper change is four times faster than joint changes. This in
         # combination with the force increase was necessary to achieve a
-        # good success rate for pick and place
+        # good success rate for pick and place.
         self.max_gripper_change = sim.dt * GRIPPER_VEL
 
         self.camera_mode = camera_mode
@@ -162,8 +163,8 @@ class PyBulletRobot:
 
         # add gripper to action space
         if not self.fixed_gripper:
-            action_high = np.concatenate((action_high, [1]))
-            action_low = np.concatenate((action_low, [-1]))
+            action_high = np.concatenate((action_high, [1.]))
+            action_low = np.concatenate((action_low, [-1.]))
 
         self.action_space = spaces.Box(low=action_low, high=action_high, dtype='float32')
 
@@ -309,19 +310,22 @@ class PyBulletRobot:
         rightg = tuple(rightg)
         hit_obj_id, link_idx, hit_fraction, hit_pos, hit_normal = self.sim.bclient.rayTest(leftg, rightg)[0]
         if DEBUG:
-            line_color = RGBCOLORS.PINK.value
+            line_color = RGBCOLORS.PINK.value[0]
             self.sim.bclient.addUserDebugLine(leftg, rightg, line_color, 0.5, 1, replaceItemUniqueId=0)
         return hit_obj_id, link_idx, hit_fraction, hit_pos, hit_normal
 
     def get_obs(self):
-        if not self.fixed_gripper:
-            gripper_state = np.concatenate((self.get_ee_position(), self.get_ee_velocity(), [self.get_fingers_width()]))
-        else:
+        if self.fixed_gripper:
             gripper_state = np.concatenate((self.get_ee_position(), self.get_ee_velocity()))
+        else:
+            gripper_state = np.concatenate((self.get_ee_position(), self.get_ee_velocity(), [self.get_fingers_width()]))
+
         if self.full_state:
             state = self.sim.get_link_state(self.body_name, self.ee_link)
-            pos, orn, vel, orn_vel = state[0], state[1], state[-2], state[-1]
-            return np.concatenate((gripper_state, pos, vel, self.sim.get_euler_from_quaternion(orn))).copy()
+            orn, orn_vel = state[1], state[-1]
+            current_poses = self.get_current_pos()
+            return np.concatenate(
+                (gripper_state, self.sim.get_euler_from_quaternion(orn), orn_vel, current_poses)).copy()
         else:
             return gripper_state.copy()
 

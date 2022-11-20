@@ -2,7 +2,7 @@ import numpy as np
 from lanro_gym.tasks.core import Task
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.scene import basic_scene
-from lanro_gym.utils import RGBCOLORS
+from lanro_gym.env_utils import RGBCOLORS
 
 
 class Push(Task):
@@ -38,7 +38,7 @@ class Push(Task):
             ],
             mass=2.0,
             position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=RGBCOLORS.RED.value + [1],
+            rgba_color=RGBCOLORS.RED.value[0] + [1],
         )
         self.sim.create_box(
             body_name="target",
@@ -50,11 +50,8 @@ class Push(Task):
             mass=0.0,
             ghost=True,
             position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=RGBCOLORS.RED.value + [0.3],
+            rgba_color=RGBCOLORS.RED.value[0] + [0.3],
         )
-
-    def get_goal(self) -> np.ndarray:
-        return self.goal.copy()
 
     def get_obs(self) -> np.ndarray:
         obj_key = "object"

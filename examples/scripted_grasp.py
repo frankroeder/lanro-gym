@@ -1,13 +1,17 @@
 """A script to demonstrate grasping."""
-import gym
+import gymnasium as gym
 import lanro_gym
+import time as time
 import numpy as np
 
-env = gym.make("PandaNLLift3Shape-v0", render=True)
+env = gym.make("PandaNLLift2Shape-v0", render=True)
 total_ep = 100
+start_t = time.time()
+
 for _ in range(total_ep):
-    obs = env.reset()
+    obs, info = env.reset()
     goal_pos = env.sim.get_base_position(env.task.goal_object_body_key)
+
     for i in range(env._max_episode_steps * 2):
         ee_pos = obs['observation'][:3]
         if i < 35:

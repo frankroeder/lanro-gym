@@ -3,7 +3,7 @@ from typing import Tuple
 from lanro_gym.tasks.core import Task
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.scene import basic_scene
-from lanro_gym.utils import RGBCOLORS
+from lanro_gym.env_utils import RGBCOLORS
 
 
 class Stack(Task):
@@ -26,6 +26,7 @@ class Stack(Task):
         self.goal_range_high = np.array([goal_xy_range / 2, goal_xy_range / 2, goal_z_range])
         self.obj_range_low = np.array([-obj_xy_range / 2, -obj_xy_range / 2, 0])
         self.obj_range_high = np.array([obj_xy_range / 2, obj_xy_range / 2, 0])
+        assert num_obj <= 4, "Maximum number of objects is 4"
         self.obj_colors = [RGBCOLORS.RED, RGBCOLORS.GREEN, RGBCOLORS.BLUE, RGBCOLORS.YELLOW][:num_obj]
         self.num_obj = num_obj
         self.goal_offsets = [1, 3, 5, 7]
@@ -46,7 +47,7 @@ class Stack(Task):
                 ],
                 mass=2.0,
                 position=[0.0, 0.0, self.object_size / 2],
-                rgba_color=obj_color.value + [1],
+                rgba_color=obj_color.value[0] + [1],
             )
             self.sim.create_sphere(
                 body_name=f"target{idx}",
@@ -54,11 +55,8 @@ class Stack(Task):
                 mass=0.0,
                 ghost=True,
                 position=[0.0, 0.0, self.object_size / 2],
-                rgba_color=obj_color.value + [0.3],
+                rgba_color=obj_color.value[0] + [0.3],
             )
-
-    def get_goal(self) -> np.ndarray:
-        return self.goal.copy()
 
     def get_obs(self) -> np.ndarray:
         observation = []
@@ -73,10 +71,8 @@ class Stack(Task):
         return np.concatenate(observation)
 
     def get_achieved_goal(self) -> np.ndarray:
-        achieved_goal = []
-        for idx in range(self.num_obj):
-            achieved_goal.append(self.sim.get_base_position(f"object{idx}"))
-        return np.concatenate(achieved_goal).copy()
+        achieved_goals = [self.sim.get_base_position(f"object{idx}") for idx in range(self.num_obj)]
+        return np.concatenate(achieved_goals).copy()
 
     def _sample_objects(self) -> Tuple:
         obj_positions = [[0.0, 0.0, self.object_size / 2] +

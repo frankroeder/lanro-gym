@@ -51,3 +51,23 @@ def test_euler_quat():
     assert sim.get_euler_from_quaternion(quat) == (3.141592653589793, -0.0, 3.141592653589793)
     euler = [0, np.pi, 0]
     assert sim.get_quaternion_from_euler(euler) == (0.0, 1.0, 0.0, 6.123233995736766e-17)
+
+
+def test_remove_body():
+    sim = PyBulletSimulation()
+    sim.create_sphere("remove_this", 0.5, 1.0, [0, 0, 0], [1, 0, 0, 1])
+    sim.remove_body("remove_this")
+    sim.remove_body("not_extant")
+
+
+def test_set_base_pos():
+    sim = PyBulletSimulation()
+    sphere_id = sim.create_sphere("test", 0.5, 1.0, [0, 0, 0], [1, 0, 0, 1])
+    sim.set_base_pose("test", [2, 2, 2], [0, 0, 0, 0])
+    assert sim.get_base_position("test") == (2, 2, 2)
+
+
+def test_get_link_state():
+    sim = PyBulletSimulation()
+    sphere_id = sim.create_sphere("test", 0.5, 1.0, [0, 0, 0], [1, 0, 0, 1])
+    assert sim.get_link_state("test", 0) == None

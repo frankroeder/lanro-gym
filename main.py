@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import os
 import numpy as np
 import lanro_gym
@@ -15,46 +15,48 @@ def parse_args():
     parser.add_argument('-r', '--reward', action='store_true', dest='reward', help='Print the reward.')
     parser.add_argument('-a', '--action', action='store_true', dest='action', help='Print the action.')
     parser.add_argument('--full', action='store_true', dest='full', help='Print everything')
+    parser.add_argument('--norender', action='store_false', dest='render', help='Deactive rendering', default=True)
     parser.add_argument('--keyboard',
                         action='store_true',
                         dest='keyboard_control',
-                        help='Activates keyboard control for interactive mode.')
-    parser.add_argument('--metrics', action='store_true', help='Print environment metrics.')
+                        help='Activates keyboard control for joints.')
+    parser.add_argument('--metrics', action='store_true', help='Option to print environment metrics.')
     parser.add_argument('--action_type', type=str, default='absolute_joints', help='Action type to control the robot.')
     parser.add_argument(
         '-e',
         '--env',
         default='PandaNLReach2-v0',
         help=
-        f"Available envs: {', '.join([envspec.id for envspec in gym.envs.registry.all() if 'Panda' in envspec.id or 'UR5' in envspec.id])}"
+        f"Available envs: {', '.join([envkey for envkey in gym.envs.registry.keys() if 'Panda' in envkey])}"
     )
     return parser.parse_args()
 
 
 def log_step(env, action, args):
-    obs, reward, done, info = env.step(action)
+    obs, reward, terminated, truncated, info = env.step(action)
     if args.reward:
         print(f"reward: {reward} success: {info['is_success']}")
     if args.action:
         print(action)
     if args.full:
-        print(obs, reward, done, info)
+        print(obs, reward, terminated, truncated, info)
     if args.metrics:
         print(env.get_metrics())
     if DEBUG and info['is_success'] or 'hindsight_instruction' in info.keys():
         import ipdb
         ipdb.set_trace()
-    return done or info['is_success']
+    return terminated or truncated or info['is_success']
 
 
 def test(env, args):
     for _ in range(100):
         env.reset()
-        done = False
-        while not done:
+        terminated = False
+        while not terminated:
             action = env.action_space.sample()
-            done = log_step(env, action, args)
-            env.render(mode="human")
+            terminated = log_step(env, action, args)
+            if args.render:
+                env.render(mode="human")
 
 
 key_events = {
@@ -77,14 +79,17 @@ key_events = {
 
 
 def interactive(args):
-    env = gym.make(args.env, render=True, action_type=args.action_type)
+    env = gym.make(args.env, render=args.render, action_type=args.action_type)
 
+    # display GUI controls
     if not args.keyboard_control:
+        import pybullet as p
+        env.env.sim.bclient.configureDebugVisualizer(p.COV_ENABLE_GUI, 1)
         controls = env.robot.get_xyz_rpy_controls()
 
     for _ in range(10):
         env.reset()
-        done = False
+        terminated = False
         action = np.zeros(shape=env.action_space.shape)
         key_control_gain = 0.01
         for idx, val in enumerate(env.robot.get_default_controls().values()):
@@ -136,16 +141,17 @@ def interactive(args):
                         print(e)
                         continue
 
-            done = log_step(env, np.array(action), args)
-            env.render(mode='human')
-            if args.metrics and done:
+            terminated = log_step(env, np.array(action), args)
+            if args.render:
+                env.render(mode='human')
+            if args.metrics and terminated:
                 break
 
 
 def main():
     args = parse_args()
     if args.test:
-        env = gym.make(args.env, render=True)
+        env = gym.make(args.env, render=args.render)
         env.reset()
         test(env, args)
         env.close()

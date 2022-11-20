@@ -2,8 +2,8 @@ import numpy as np
 from lanro_gym.robots import PyBulletRobot
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.core import LanguageTask
-from lanro_gym.tasks.scene import basic_scene
 from lanro_gym.utils import goal_distance
+from lanro_gym.language_utils import create_commands
 
 
 class NLPush(LanguageTask):
@@ -14,8 +14,13 @@ class NLPush(LanguageTask):
                  obj_xy_range: float = 0.3,
                  num_obj: int = 2,
                  use_hindsight_instructions: bool = False,
+                 use_action_repair: bool = False,
+                 delay_action_repair: bool = False,
+                 use_negations_action_repair: bool = False,
+                 use_synonyms: bool = False,
                  mode: str = 'Color'):
-        super().__init__(sim, robot, mode, use_hindsight_instructions, num_obj)
+        super().__init__(sim, robot, mode, use_hindsight_instructions, use_action_repair, delay_action_repair,
+                         use_negations_action_repair, num_obj, use_synonyms)
         self.min_push_distance = 0.025
         self.max_push_distance = 0.075
         self.max_height_change = self.object_size
@@ -25,9 +30,6 @@ class NLPush(LanguageTask):
         with self.sim.no_rendering():
             self._create_scene()
             self.sim.place_visualizer()
-
-    def _create_scene(self) -> None:
-        basic_scene(self.sim)
 
     def show_goal_boundary(self):
         if self.sim.render_on:
@@ -41,7 +43,7 @@ class NLPush(LanguageTask):
                 radius=self.ep_push_distance,
                 height=0.001,
                 position=target_pos,
-                rgba_color=self.task_object_list.objects[self.goal_obj_idx].get_color().value + [0.3],
+                rgba_color=self.task_object_list.objects[self.goal_obj_idx].get_color().value[0] + [0.3],
             )
 
     def reset(self) -> None:
@@ -56,7 +58,7 @@ class NLPush(LanguageTask):
         self.ep_push_distance = self.np_random.uniform(low=self.min_push_distance, high=self.max_push_distance)
         # visualize goal region
         self.show_goal_boundary()
-        self.reset_hi()
+        self.reset_hi_and_ar()
 
     def is_success(self):
         init_goal_pos = self.obj_init_pos_dict[self.goal_object_body_key]
@@ -72,7 +74,7 @@ class NLPush(LanguageTask):
         # this should prevent lifting the object or throwing it to the ground
         return change_xy > self.ep_push_distance and change_z < self.max_height_change
 
-    def moved_other_object(self) -> str:
+    def moved_other_object(self):
         for other_object_idx in self.non_goal_body_indices:
             _non_goal_body = f"object{other_object_idx}"
             init_obj_pos = self.obj_init_pos_dict[_non_goal_body]
@@ -80,14 +82,33 @@ class NLPush(LanguageTask):
             if self.detect_push_motion(init_obj_pos, current_obj_pos):
                 return other_object_idx
         else:
-            return ''
+            return None
 
     def compute_reward(self) -> float:
         if self.is_success():
-            return 0.0
+            _result = self.generate_action_repair_or_success()
+            # update visualization of goal region
+            self.show_goal_boundary()
+            return _result
         elif self.ep_hindsight_instruction and not self.ep_hindsight_instruction_returned:
             other_object_idx = self.moved_other_object()
             if other_object_idx:
                 self.generate_hindsight_instruction(other_object_idx)
                 return -10.
+        elif self.ep_action_repair and not self.ep_action_repair_returned:
+            other_object_idx = self.moved_other_object()
+            if other_object_idx:
+                if self.use_negations_action_repair and self.np_random.random() < 0.5:
+                    # action correction with negation
+                    # "push the red object" -> pushes green object -> correction "no not the green object"
+                    target_property_tuple = self.task_object_list.objects[other_object_idx].get_properties()
+                    repair_commands = create_commands("negation", target_property_tuple, use_synonyms=self.use_synonyms)
+                else:
+                    # additional feedback for the goal object, pushing a wrong object
+                    # "push the red block" -> *pushes green block* -> "the red block!"
+                    target_property_tuple = self.task_object_list.objects[self.goal_obj_idx].get_properties()
+                    repair_commands = create_commands("repair", target_property_tuple, use_synonyms=self.use_synonyms)
+                self.show_goal_boundary()
+                self.merge_instruction_action_repair(repair_commands)
+                return -1.0
         return -1.0

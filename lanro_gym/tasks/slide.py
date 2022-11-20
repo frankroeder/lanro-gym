@@ -2,7 +2,7 @@ import numpy as np
 from lanro_gym.tasks.core import Task
 from lanro_gym.simulation import PyBulletSimulation
 from lanro_gym.tasks.scene import basic_scene
-from lanro_gym.utils import RGBCOLORS
+from lanro_gym.env_utils import RGBCOLORS
 
 SLIDE_OBJ_SIZE: float = 0.06
 
@@ -38,7 +38,7 @@ class Slide(Task):
             radius=self.object_size / 2,
             height=self.object_size / 2,
             position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=RGBCOLORS.RED.value + [1],
+            rgba_color=RGBCOLORS.RED.value[0] + [1],
             lateral_friction=0.1,
             spinning_friction=0.005,
         )
@@ -49,11 +49,8 @@ class Slide(Task):
             radius=self.object_size / 2,
             height=self.object_size / 2,
             position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=RGBCOLORS.RED.value + [0.3],
+            rgba_color=RGBCOLORS.RED.value[0] + [0.3],
         )
-
-    def get_goal(self) -> np.ndarray:
-        return self.goal.copy()
 
     def get_obs(self) -> np.ndarray:
         obj_key = "object"

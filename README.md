@@ -3,9 +3,10 @@
 <img src="./docs/panda_nlpush.gif" width="100%" height="auto">
 </div>
 
-__LANRO__ is a platform to study language-conditioned reinforcement learning with
-a synthetic caretaker providing instructions in hindsight.
-It had been published as part of our paper [**_Grounding Hindsight Instructions in Multi-Goal Reinforcement Learning for Robotics_**](https://arxiv.org/abs/2204.04308).
+__LANRO__ is a platform to study language-conditioned reinforcement learning.
+It is part of the following publications that introduced the following features:
+1. a synthetic caretaker providing instructions in hindsight [**_Grounding Hindsight Instructions in Multi-Goal Reinforcement Learning for Robotics_**](https://arxiv.org/abs/2204.04308) ([ICDL 2022](https://icdl2022.qmul.ac.uk/), see `icdl2022` branch for old version)
+2. a setup for conversational repair via action corrections [**_Language-Conditioned Reinforcement Learning to Solve Misunderstandings with Action Corrections_**](https://openreview.net/forum?id=lWd0qiv9E-) ([NeurIPS 2022 Workshop LaReL](https://larel-workshop.github.io/))
 
 ## Installation
 ### Pip module
@@ -31,15 +32,15 @@ pip install git+ssh://git@github.com/frankroeder/lanro-gym.git
 ## Example
 
 ```python
-import gym
+import gymnasium as gym
 import lanro_gym
 
 env = gym.make('PandaStack2-v0', render=True)
 
-obs = env.reset()
-done = False
-while not done:
-    obs, reward, done, info = env.step(env.action_space.sample())
+obs, info = env.reset()
+terminated = False
+while not terminated:
+    obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
 
 env.close()
 ```
@@ -89,6 +90,19 @@ License: [MIT](https://github.com/qgallouedec/panda-gym/blob/master/LICENSE)
 Changes: The code structure of `lanro-gym` contains copies and extensively modified parts of `panda-gym`.
 
 ## Citations
+
+**Grounding Hindsight Instructions in Multi-Goal Reinforcement Learning for Robotics**
+```bibtex
+@inproceedings{Roder_GroundingHindsight_2022,
+  title = {Grounding {{Hindsight Instructions}} in {{Multi-Goal Reinforcement Learning}} for {{Robotics}}},
+  booktitle = {International {{Conference}} on {{Development}} and {{Learning}}},
+  author = {R{\"o}der, Frank and Eppe, Manfred and Wermter, Stefan},
+  year = {2022},
+  pages = {170--177},
+  publisher = {{IEEE}},
+  isbn = {978-1-66541-310-7},
+}
+```
 
 **pybullet**
 ```bibtex
