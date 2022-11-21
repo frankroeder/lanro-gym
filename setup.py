@@ -15,7 +15,7 @@ setup(
     license="MIT",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/frankroeder/lanro_gym",
+    url="https://github.com/frankroeder/lanro-gym",
     packages=[package for package in find_packages() if package.startswith("lanro_gym")],
     package_data={ "lanro_gym": ["VERSION"] },
     include_package_data=True,
